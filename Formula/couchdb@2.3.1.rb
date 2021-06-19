@@ -14,6 +14,8 @@ class CouchdbAT231 < Formula
   depends_on "icu4c"
   depends_on "openssl@1.1"
   depends_on "spidermonkey"
+  
+  keg_only :versioned_formula
 
   def install
     system "./configure"
