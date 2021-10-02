@@ -12,10 +12,11 @@ class Basez < Formula
     ENV.deparallelize
     system "./configure", *std_configure_args
     system "make"
+    system "make", "test"
     system "make", "install"
   end
 
   test do
-    system "basez", "--help"
+    system "basez", "--version"
   end
 end
