@@ -17,9 +17,9 @@ class ProtobufAT250 < Formula
     depends_on "automake" => :build
     depends_on "libtool" => :build
   end
-  
+
   keg_only :versioned_formula
-  
+
   def install
     ENV.prepend "CXXFLAGS", "-DNDEBUG"
     ENV.cxx11
@@ -29,7 +29,6 @@ class ProtobufAT250 < Formula
                           "--prefix=#{prefix}", "--with-zlib"
     system "make"
     system "make", "install"
-
   end
 
   test do

@@ -5,6 +5,8 @@ class CouchdbAT231 < Formula
   mirror "https://archive.apache.org/dist/couchdb/source/2.3.1/apache-couchdb-2.3.1.tar.gz"
   sha256 "43eb8cec41eb52871bf22d35f3e2c2ce5b806ebdbce3594cf6b0438f2534227d"
 
+  keg_only :versioned_formula
+
   depends_on "autoconf" => :build
   depends_on "autoconf-archive" => :build
   depends_on "automake" => :build
@@ -14,8 +16,6 @@ class CouchdbAT231 < Formula
   depends_on "icu4c"
   depends_on "openssl@1.1"
   depends_on "spidermonkey"
-  
-  keg_only :versioned_formula
 
   def install
     system "./configure"
