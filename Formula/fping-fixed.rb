@@ -1,4 +1,4 @@
-class FpingAT44 < Formula
+class FpingFixed < Formula
   desc "Scriptable ping program for checking if multiple hosts are up"
   homepage "https://fping.org/"
   url "https://fping.org/dist/fping-4.4.tar.gz"
