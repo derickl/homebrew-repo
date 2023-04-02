@@ -2,8 +2,12 @@ class MongodbCommunityAT42 < Formula
   desc "High-performance, schema-free, document-oriented database"
   homepage "https://www.mongodb.com/"
 
-  url "https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-4.2.17.tgz"
-  sha256 "a13af71ab422b2776f9f5d9028c53f8e2322ec6d37f57ad4d36d711070193d00"
+  # frozen_string_literal: true
+
+  url "https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-4.2.24.tgz"
+  sha256 "15047907fd43362edc721b53a8db56484b6420024fade8d7ada8cb0d4dae767c"
+
+  option "with-enable-test-commands", "Configures MongoDB to allow test commands such as failpoints"
 
   keg_only :versioned_formula
 
@@ -19,7 +23,8 @@ class MongodbCommunityAT42 < Formula
     end
   end
 
-  def mongodb_conf; <<~EOS
+  def mongodb_conf
+    cfg = <<~EOS
     systemLog:
       destination: file
       path: #{var}/log/mongodb/mongo.log
@@ -27,48 +32,23 @@ class MongodbCommunityAT42 < Formula
     storage:
       dbPath: #{var}/mongodb
     net:
-      bindIp: 127.0.0.1
-  EOS
+      bindIp: 127.0.0.1, ::1
+      ipv6: true
+    EOS
+    if build.with? "enable-test-commands"
+      cfg += <<~EOS
+      setParameter:
+        enableTestCommands: 1
+      EOS
+    end
+    cfg
   end
 
-  plist_options :manual => "mongod --config #{HOMEBREW_PREFIX}/etc/mongod.conf"
-
-  def plist; <<~EOS
-    <?xml version="1.0" encoding="UTF-8"?>
-    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-    <plist version="1.0">
-    <dict>
-      <key>Label</key>
-      <string>#{plist_name}</string>
-      <key>ProgramArguments</key>
-      <array>
-        <string>#{opt_bin}/mongod</string>
-        <string>--config</string>
-        <string>#{etc}/mongod.conf</string>
-      </array>
-      <key>RunAtLoad</key>
-      <true/>
-      <key>KeepAlive</key>
-      <false/>
-      <key>WorkingDirectory</key>
-      <string>#{HOMEBREW_PREFIX}</string>
-      <key>StandardErrorPath</key>
-      <string>#{var}/log/mongodb/output.log</string>
-      <key>StandardOutPath</key>
-      <string>#{var}/log/mongodb/output.log</string>
-      <key>HardResourceLimits</key>
-      <dict>
-        <key>NumberOfFiles</key>
-        <integer>64000</integer>
-      </dict>
-      <key>SoftResourceLimits</key>
-      <dict>
-        <key>NumberOfFiles</key>
-        <integer>64000</integer>
-      </dict>
-    </dict>
-    </plist>
-  EOS
+  service do
+    run [opt_bin/"mongod", "--config", etc/"mongod.conf"]
+    working_dir HOMEBREW_PREFIX
+    log_path var/"log/mongodb/output.log"
+    error_log_path var/"log/mongodb/output.log"
   end
 
   test do
